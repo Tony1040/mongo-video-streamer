@@ -49,10 +49,6 @@ app.get("/video/:id", async function (req, res) {
       console.log("showing video from: ", start);
       const end = videoSize - 1;
       console.log("Showing end: ", end);
-      if (start > end) {
-        console.log("Chnaing gstart cause was bigger");
-        start = 0;
-      }
 
       const contentLength = videoSize;
       const headers = {
