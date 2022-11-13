@@ -27,7 +27,7 @@ app.get("/video/:id", async function (req, res) {
   const range = req.headers.range;
   if (!range) {
     res.status(400).send("Requires Range header");
-    return ;
+    return;
   }
 
   const db = client.db(DB_NAME);
@@ -44,10 +44,17 @@ app.get("/video/:id", async function (req, res) {
 
       // Create response headers
       const videoSize = video.length;
-      const start = Number(range.replace(/\D/g, ""));
+      console.log("range: ", range);
+      let start = Number(range.replace(/\D/g, ""));
+      console.log("showing video from: ", start);
       const end = videoSize - 1;
+      console.log("Showing end: ", end);
+      if (start > end) {
+        console.log("Chnaing gstart cause was bigger");
+        start = 0;
+      }
 
-      const contentLength = end - start + 1;
+      const contentLength = videoSize;
       const headers = {
         "Content-Range": `bytes ${start}-${end}/${videoSize}`,
         "Accept-Ranges": "bytes",
@@ -62,8 +69,9 @@ app.get("/video/:id", async function (req, res) {
       const bucket = new mongodb.GridFSBucket(db);
       const downloadStream = bucket.openDownloadStreamByName(req.params.id, {
         start,
+        end,
       });
-      console.log("downloadstream: ", downloadStream);
+      // console.log("downloadstream: ", downloadStream);
       // const writeStream = fs.createWriteStream(__dirname + "/videos/db_test.mov");
       // Finally pipe video to response
       // downloadStream.pipe(writeStream);
