@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const fs = require("fs");
 const mongodb = require("mongodb");
 
 const clientPromise = require("./mongoDB");
@@ -10,6 +9,14 @@ const DB_NAME = "JazzLegendsApp";
 
 app.options("/", (req, res) => {
   res.json({ statusCode: 200, headers, body: "OK" });
+});
+
+app.get("/", function (req, res) {
+  res.json("Completed");
+});
+
+app.get("/video", function (req, res) {
+  res.json("Completed");
 });
 
 app.get("/video/:id", async function (req, res) {
