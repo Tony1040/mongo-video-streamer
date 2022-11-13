@@ -4,7 +4,7 @@ const mongodb = require("mongodb");
 
 const clientPromise = require("./mongoDB");
 const headers = require("./headerCORS");
-
+const PORT = process.env.PORT || 8000;
 const DB_NAME = "JazzLegendsApp";
 
 app.options("/", (req, res) => {
@@ -72,6 +72,6 @@ app.get("/video/:id", async function (req, res) {
   );
 });
 
-app.listen(8000, function () {
-  console.log("Listening on port 8000!");
+app.listen(PORT, function () {
+  console.log("Listening on port " + PORT + "!");
 });
