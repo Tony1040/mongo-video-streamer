@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "build": "babel . -d dist"
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
