@@ -41,38 +41,43 @@ app.get("/video/:id", async function (req, res) {
         res.status(404).send("No video uploaded!");
         return;
       }
+      try {
+        // Create response headers
+        const videoSize = video.length;
+        console.log("range: ", range);
+        let start = Number(range.replace(/\D/g, ""));
+        console.log("showing video from: ", start);
+        const end = videoSize - 1;
+        console.log("Showing end: ", end);
 
-      // Create response headers
-      const videoSize = video.length;
-      console.log("range: ", range);
-      let start = Number(range.replace(/\D/g, ""));
-      console.log("showing video from: ", start);
-      const end = videoSize - 1;
-      console.log("Showing end: ", end);
+        const contentLength = videoSize;
+        const headers = {
+          "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": contentLength,
+          "Content-Type": "video/x-m4v",
+        };
 
-      const contentLength = videoSize;
-      const headers = {
-        "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": contentLength,
-        "Content-Type": "video/mp4",
-      };
+        // HTTP Status 206 for Partial Content
+        res.writeHead(206, headers);
 
-      // HTTP Status 206 for Partial Content
-      res.writeHead(206, headers);
-
-      // Get the bucket and download stream from GridFS
-      const bucket = new mongodb.GridFSBucket(db);
-      const downloadStream = bucket.openDownloadStreamByName(req.params.id, {
-        start,
-        end,
-      });
-      // console.log("downloadstream: ", downloadStream);
-      // const writeStream = fs.createWriteStream(__dirname + "/videos/db_test.mov");
-      // Finally pipe video to response
-      // downloadStream.pipe(writeStream);
-      // const test_stream = fs.createReadStream(__dirname + "/videos/db_test2.mp4");
-      downloadStream.pipe(res);
+        // Get the bucket and download stream from GridFS
+        const bucket = new mongodb.GridFSBucket(db);
+        const downloadStream = bucket.openDownloadStreamByName(req.params.id, {
+          start,
+          end,
+        });
+        // console.log("downloadstream: ", downloadStream);
+        // const writeStream = fs.createWriteStream(__dirname + "/videos/db_test.mov");
+        // Finally pipe video to response
+        // downloadStream.pipe(writeStream);
+        // const test_stream = fs.createReadStream(__dirname + "/videos/db_test2.mp4");
+        downloadStream.pipe(res);
+      } catch (error) {
+        console.log("Something went wrong!");
+        console.log(error);
+        res.json(error);
+      }
     }
   );
 });
